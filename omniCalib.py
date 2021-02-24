@@ -15,10 +15,9 @@ objp[0,:,:2] = np.mgrid[0:6, 0:9].T.reshape(-1, 2)
 images = glob.glob('*.jpg')
 
 
-def undistortImg(K, D, xi, imagePath):
+def undistortImg(K, D, xi, img):
 	
-	# read image, which user wants to undistort
-	img = cv2.imread(imagePath)
+	# img is the live captured image
 	
 	# set the camera matrix - resize the width and height of final image
 	new_K = np.copy(K)
@@ -29,12 +28,8 @@ def undistortImg(K, D, xi, imagePath):
 	undistorted = np.zeros((1024, 720, 3), np.uint8)
 	undistorted = cv2.omnidir.undistortImage(img, K, D, xi, cv2.omnidir.RECTIFY_PERSPECTIVE, undistorted, new_K)
 
-	# image preview
+	# image preview -> shows on output for user
 	cv2.imshow("undistorted", undistorted)
-	
-	#save image
-	cv2.imwrite("./undistortedPython.png", undistorted);
-	cv2.waitKey(0)
 
 
 def calibrateCamera(objpoints, imgpoints, imgShape):
@@ -78,4 +73,17 @@ def calcCorners():
 if __name__ == "__main__":
 	objpoints, imgpoints, gray = calcCorners()
 	K, D, xi = calibrateCamera(objpoints, imgpoints, gray.shape[::-1])
-	undistortImg(K, D, xi, 'to_undistort_plz.jpg')
+	
+	cap = cv2.VideoCapture(0)
+	cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1024)
+	cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+	
+	while(True):
+		ret, frame = cap.read()
+		cv2.imshow('frame', frame)
+		undistortImg(K, D, xi, frame)
+		if cv2.waitKey(1) & 0xFF == ord('q'):
+			break
+	
+	cap.release()
+	cv2.destroyAllWindows()
