@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import glob
+import sys
 
 # GLOBAL VARIABLES
 CHECKERBOARD = (6,9)
@@ -14,14 +15,15 @@ objp[0,:,:2] = np.mgrid[0:6, 0:9].T.reshape(-1, 2)
 # LOAD IMAGES FOR CALIBRATION ONLY!
 images = glob.glob('*.jpg')
 
+liveCap = False
 
-# def undistortImg(K, D, xi, imagePath):
 def undistortImg(K, D, xi, img):
 	
-	# read image, which user wants to undistort - when param imagePath
-	# img = cv2.imread(imagePath)
-	
-	# img is the live captured image - when param img
+	# read image, which user wants to undistort - when not liveCap
+	if not liveCap:
+		img = cv2.imread(img)
+	# else
+	# img is the live captured image - when liveCap
 	
 	# set the camera matrix - resize the width and height of final image
 	new_K = np.copy(K)
@@ -47,11 +49,13 @@ def undistortImg(K, D, xi, img):
 
 	# image preview
 	# this shows on output for user
-	cv2.imshow("undistorted", undistorted)
-
+	if liveCap:
+		cv2.imshow("undistorted", undistorted)
+	else:
 	# save image	
-	# cv2.imwrite("./undistortedPython.png", undistorted);	
-	# cv2.waitKey(0)
+		cv2.imshow("undistorted", undistorted)
+		cv2.imwrite("./undistortedPython.png", undistorted);	
+		cv2.waitKey(0)
 
 
 def calibrateCamera(objpoints, imgpoints, imgShape):
@@ -92,22 +96,41 @@ def calcCorners():
 	return objpoints, imgpoints, gray
 
 
+def printHelp():
+	print("HELP")
+	exit(0)
+
+
 if __name__ == "__main__":
+	if len(sys.argv) != 2:
+		print('BAD INPUT ARGUMENTS!')
+		printHelp()
+		
 	objpoints, imgpoints, gray = calcCorners()
 	K, D, xi = calibrateCamera(objpoints, imgpoints, gray.shape[::-1])
 	
-	cap = cv2.VideoCapture(0)
-	cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1024)
-	cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
-	
-	while(True):
-		ret, frame = cap.read()
-		# cv2.imshow('frame', frame) # uncomment this when want to see default camera view
-		undistortImg(K, D, xi, frame)
-		if cv2.waitKey(1) & 0xFF == ord('q'):
-			break
-	
-	cap.release()
-	cv2.destroyAllWindows()
-	
-	# undistortImg(K, D, xi, 'to_undistort_plz.jpg')
+	if sys.argv[1] == '--livecap':
+		liveCap = True
+		cap = cv2.VideoCapture(0)
+		cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1024)
+		cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+		
+		while(True):
+			ret, frame = cap.read()
+			# cv2.imshow('frame', frame) # uncomment this when want to see default camera view
+			undistortImg(K, D, xi, frame)
+			if cv2.waitKey(1) & 0xFF == ord('q'):
+				break
+		
+		cap.release()
+		cv2.destroyAllWindows()
+		
+	elif sys.argv[1] == '--img':
+		undistortImg(K, D, xi, 'to_undistort_plz.jpg')
+		
+	elif sys.argv[1] == '--help':
+		printHelp()
+		
+	else:
+		print('BAD INPUT ARGUMENTS!')
+		printHelp()
