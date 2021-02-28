@@ -16,11 +16,39 @@ objp[0,:,:2] = np.mgrid[0:6, 0:9].T.reshape(-1, 2)
 # LOAD IMAGES FOR CALIBRATION ONLY!
 images = glob.glob('*.jpg')
 
+# FACE DETECTION
+cascPath = "haarcascade_frontalface_default.xml"
+
+# Create the haar cascade
+faceCascade = cv2.CascadeClassifier(cascPath)
+
 liveCap = False
+faceDetection = False
 
 _RL = 0.
 _UD = 0.
 _ZOOM = 0.30
+
+
+def detectFace(image):
+	
+	gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+	
+	# Detect faces in the image
+	faces = faceCascade.detectMultiScale(
+		gray,
+		scaleFactor=1.1,
+		minNeighbors=5,
+		minSize=(30, 30),
+		flags = cv2.CASCADE_SCALE_IMAGE
+	)
+	
+	# Draw a rectangle around the faces
+	for (x, y, w, h) in faces:
+		cv2.rectangle(image, (x, y), (x+w, y+h), (0, 255, 0), 2)
+		
+	return image
+
 
 def undistortImg(K, D, xi, img):
 	
@@ -52,7 +80,9 @@ def undistortImg(K, D, xi, img):
 	# write undistorted image into numpy array
 	undistorted = np.zeros((1024, 720, 3), np.uint8)
 	undistorted = cv2.omnidir.undistortImage(img, K, D, xi, cv2.omnidir.RECTIFY_PERSPECTIVE, undistorted, new_K, R=R)
-
+	
+	if faceDetection:
+		undistorted = detectFace(undistorted)
 	# image preview
 	# this shows on output for user
 	if liveCap:
