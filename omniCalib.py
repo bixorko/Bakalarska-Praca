@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import glob
 import sys
+import select
 
 # GLOBAL VARIABLES
 CHECKERBOARD = (6,9)
@@ -16,6 +17,10 @@ objp[0,:,:2] = np.mgrid[0:6, 0:9].T.reshape(-1, 2)
 images = glob.glob('*.jpg')
 
 liveCap = False
+
+_RL = 0.
+_UD = 0.
+_ZOOM = 0.30
 
 def undistortImg(K, D, xi, img):
 	
@@ -41,7 +46,8 @@ def undistortImg(K, D, xi, img):
 	# TODO - maybe create ZOOM (set DEF values)
 	#			   DEF	X     LEFT        X   DEF     UP	  ?   X   DEF
 	#						  RIGHT					 DOWN
-	R = np.array(((0.5, 0.,     0.),     (0., 0.6,    0.),   (0., 0., 0.3)))
+	# R = np.array(((0.5, 0.,    _RL),     (0., 0.6,   _UD),   (0., 0., 0.3)))
+	R = np.array(((0.5, 0.,    _RL),     (0., 0.6,   _UD),   (0., 0., _ZOOM)))
 	
 	# write undistorted image into numpy array
 	undistorted = np.zeros((1024, 720, 3), np.uint8)
@@ -102,6 +108,7 @@ def printHelp():
 
 
 if __name__ == "__main__":
+	
 	if len(sys.argv) != 2:
 		print('BAD INPUT ARGUMENTS!')
 		printHelp()
@@ -118,6 +125,23 @@ if __name__ == "__main__":
 		while(True):
 			ret, frame = cap.read()
 			# cv2.imshow('frame', frame) # uncomment this when want to see default camera view
+			
+			i, o, e = select.select([sys.stdin], [], [], 0.00000000001)
+			if (i):
+				direction = sys.stdin.readline().strip()
+				if direction == 'd':
+					_UD -= 0.1
+				elif direction == 'u':
+					_UD += 0.1
+				elif direction == 'l':
+					_RL -= 0.1
+				elif direction == 'r':
+					_RL += 0.1
+				elif direction == 'zi':
+					_ZOOM -= 0.01
+				elif direction == 'zo':
+					_ZOOM += 0.01
+			  
 			undistortImg(K, D, xi, frame)
 			if cv2.waitKey(1) & 0xFF == ord('q'):
 				break
