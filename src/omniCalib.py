@@ -3,9 +3,6 @@ import numpy as np
 import glob
 import sys
 import select
-from picamera.array import PiRGBArray
-from picamera import PiCamera
-import time
 
 # GLOBAL VARIABLES
 CHECKERBOARD = (6,9)
@@ -151,43 +148,36 @@ if __name__ == "__main__":
 	
 	if sys.argv[1] == '--livecap':
 		liveCap = True
-		camera = PiCamera()
-		camera.resolution = (1024, 720)
-		camera.framerate = 15
-		rawCapture = PiRGBArray(camera, size=(1024, 720))
-		time.sleep(0.1)
-		while True:
-			for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
-				# grab the raw NumPy array representing the image, then initialize the timestamp
-				# and occupied/unoccupied text
-				image = frame.array
-				# show the frame
-				i, o, e = select.select([sys.stdin], [], [], 0.00000000001)
-				if (i):
-					direction = sys.stdin.readline().strip()
-					if direction == 'd':
-						_UD -= 0.1
-					elif direction == 'u':
-						_UD += 0.1
-					elif direction == 'l':
-						_RL -= 0.1
-					elif direction == 'r':
-						_RL += 0.1
-					elif direction == 'zi':
-						_ZOOM -= 0.01
-					elif direction == 'zo':
-						_ZOOM += 0.01
-						
-				undistortImg(K, D, xi, image)
-				#cv2.imshow("Frame", image)
-				key = cv2.waitKey(1) & 0xFF
-				# clear the stream in preparation for the next frame
-				rawCapture.truncate(0)
+		cap = cv2.VideoCapture(0)
+		cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1024)
+		cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+
+		while(True):
+			ret, frame = cap.read()
+			# cv2.imshow('frame', frame) # uncomment this when want to see default camera view
+
+			i, o, e = select.select([sys.stdin], [], [], 0.00000000001)
+			if (i):
+				direction = sys.stdin.readline().strip()
+				if direction == 'd':
+					_UD -= 0.1
+				elif direction == 'u':
+					_UD += 0.1
+				elif direction == 'l':
+					_RL -= 0.1
+				elif direction == 'r':
+					_RL += 0.1
+				elif direction == 'zi':
+					_ZOOM -= 0.01
+				elif direction == 'zo':
+					_ZOOM += 0.01
+
+			undistortImg(K, D, xi, frame)
+			if cv2.waitKey(1) & 0xFF == ord('q'):
 				break
-			# if the `q` key was pressed, break from the loop
-			print("while!")
-			if key == ord("q"):
-				break
+
+		cap.release()
+		cv2.destroyAllWindows()
 		
 	elif sys.argv[1] == '--img':
 		undistortImg(K, D, xi, 'to_undistort_plz.jpg')
