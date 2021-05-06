@@ -155,7 +155,7 @@ var Camera = (function () {
         utils.log.info("Zoom-Out Move: /zoom-out");
         utils.log.info("\n============================\n");
         
-        this.rtspServer = utils.spawn("./python/gst-rtsp-launch.sh", ["-P", this.config.RTSPPort.toString(), "-u", this.config.RTSPName.toString(), "-W", this.settings.resolution.Width.toString(), "-H", this.settings.resolution.Height.toString(), "-d", ((this.config.CameraType == 'picam') ? ('picam') : (this.config.CameraDevice))]);
+        this.rtspServer = utils.spawn("./python/gst-rtsp-launch.sh", [""]);
         global.pythonOutput = this.rtspServer;
 
         if (this.rtspServer) {
