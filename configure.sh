@@ -33,6 +33,11 @@ git checkout 1.4.5
 #echo "WRITING MAKE"
 make
 sudo make install
-cd ..
-cd rpos
+cd ~
+sudo su <<EOF
+bash <(curl -s https://gitlab.com/Shinobi-Systems/Shinobi-Installer/raw/master/shinobi-install.sh)
+bash <(curl -s https://gitlab.com/Shinobi-Systems/Shinobi-Installer/raw/master/shinobi-install.sh)
+1
+EOF
+cd ~/Bakalarska-praca/rpos
 node rpos.js
