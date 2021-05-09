@@ -1,3 +1,10 @@
+/*
+ * This service is taken from RPOS
+ * https://github.com/BreeeZe/rpos
+ * and edited by Peter Vinarcik
+ * for PTZ driver simulation purposes
+ */
+
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];

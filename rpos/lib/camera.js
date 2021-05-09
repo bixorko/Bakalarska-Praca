@@ -1,3 +1,10 @@
+/*
+ * This service is taken from RPOS
+ * https://github.com/BreeeZe/rpos
+ * and edited by Peter Vinarcik
+ * for PTZ driver simulation purposes
+ */
+
 "use strict";
 var utils_1 = require('./utils');
 var fs = require('fs');
