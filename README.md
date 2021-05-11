@@ -11,7 +11,7 @@ Takýto pohyb následne simuluje pan-tilt-zoom mechanizmus kamery, kedy sa javí
 
 ### Nutné predinštalované závislosti:
 + Celková implementácia počíta s predinštalovanou knižnicou OpenCV.
-+ Možnou variantou je napríklad nainštalovania OpenCV 4.5.0 pomocou návodu https://qengineering.eu/install-opencv-4.5-on-raspberry-pi-4.html
++ Možnou variantou je napríklad nainštalovanie OpenCV 4.5.0 pomocou návodu https://qengineering.eu/install-opencv-4.5-on-raspberry-pi-4.html
 + Alternatívne je možnosť použiť inštalačný návod nachádzajúci sa v texte bakalárskej práce v kapitole Implementácia (7).
 
 ### Spustenie:
@@ -24,11 +24,11 @@ Po naklonovaní repozitára pomocou príkazu
 + Alternatívne je možné túto chybu vyriešiť pomocou oficiálneho Shinobi článku: https://hub.shinobi.video/articles/view/sIuhLW2A0E8A7K3
 + Po vytvorení užívateľského konta je nutné presmerovanie na adresu http://RPiIP:8080/ kde sa následne dá prihlásiť pod novovytvoreným účtom.
 + Potom je nutné kliknúť na symbol + nachádzajúci sa v ľavom hornom rohu a pokračovať následovne:
-++ Options
-++ Import
-++ Upload File
-++ Zvoliť v priečinku rpos - shinobiCameraSettings.json
-++ Load
++ Options
++ Import
++ Upload File
++ Zvoliť v priečinku rpos - shinobiCameraSettings.json
++ Load
 + Následne je možné kameru bezproblémovo ovládať z NVR Shinobi.
 
 ### Detekcia tváre
