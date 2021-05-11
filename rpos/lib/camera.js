@@ -162,7 +162,7 @@ var Camera = (function () {
         utils.log.info("Zoom-Out Move: /zoom-out");
         utils.log.info("\n============================\n");
         
-        this.rtspServer = utils.spawn("./python/gst-rtsp-launch.sh", [""]);
+        this.rtspServer = utils.spawn("./python/launch.sh", [""]);
         global.pythonOutput = this.rtspServer;
 
         if (this.rtspServer) {
